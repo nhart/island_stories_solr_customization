@@ -1,0 +1,45 @@
+<?php
+
+// $Id$
+
+/**
+ * @file
+ * Configuration module for islandora_solr_search.module
+ */
+
+function island_stories_solr_customization_menu() {
+
+    $items = array();
+
+
+    $items['communities'] = array(
+        'title' => t('Island Communities'),
+       	'page callback' => 'island_stories_solr_customization_communities_view',
+        'type' => MENU_CALLBACK,
+        'access arguments' => array('view fedora collection')
+    );
+    return $items;
+}
+
+
+function island_stories_solr_customization_islandora_solr_primary_display() {
+
+  return array(
+
+
+
+    'island_stories_display' => array(
+      'name' => t('Island Stories custom output'),
+      'module' => 'island_stories_solr_customization',
+      'file' => 'IslandStoriesSolrResults.inc',
+      'class' => "IslandStoriesSolrResults",
+      'function' => "displayResults",
+      'description' => t("Custom display for Island Stories"),
+    ),
+  );
+}
+
+function island_stories_solr_customization_communities_view() {
+     drupal_goto('islandora/solr/search/rels.isMemberOfCollection:istories\:communities'); 
+        
+}
