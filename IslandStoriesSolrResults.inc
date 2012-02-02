@@ -33,9 +33,7 @@ class IslandStoriesSolrResults extends IslandoraSolrResults {
   function printResults($results) {
     module_load_include('inc', 'fedora_repository', 'api/fedora_item');    
     
-    global $base_url;  
-    
-    
+    global $base_url;
     
     $recordStart = (int) $results->response->start;
     if (empty($results)) {
@@ -54,23 +52,32 @@ class IslandStoriesSolrResults extends IslandoraSolrResults {
     $i = 0;
     $fedora_url = variable_get('fedora_base_url','http://localhost:8080/fedora');
     
-    foreach ($docs as $num => $doc) {       
+    //loop through all the indexed objects
+    foreach ($docs as $doc) {       
         $i++;
     	$PID = $doc['PID'];
     	$title = $doc['title'][0];
+        if(strlen($title) > 30) {
+            $title = substr($title, 0, 30);        
+            $title .= "...";
+        }
         $city = $doc['mods.city'][0];
+        //take out any reference to island in the city eg: lennox island
+        $city = str_replace("Island", "", $city);
         $collection = $doc['rels.isMemberOfCollection'][0];
+        //get the content model name
+        $model = str_replace("info:fedora/", "", $doc['rels.hasModel'][0]);
         
         if($collection == "info:fedora/istories:communities") {
-            $link = "islandora/solr/search/mods.city:$city";            
+            $link = "islandora/solr/search/mods.city:$city AND -rels.isMemberOfCollection:istories\:communities AND coordinates:[* TO *] AND -typeOfResource:collection AND (PID:cap* OR PID:craipe* OR PID:herbarium* OR PID:imagined* OR PID:ivoices* OR PID:ilives*)";            
+            
             
         }
         else {
-            $link = $fedora_url;
+            $link = $base_url ."/islandoraviewer/$PID/$model";
         }
-        
-        //l('<img src="path/to/image.jpg"/>', $filepath, $options = array('html' => TRUE));
-    	$cols[] = l("<img src=\"$fedora_url/get/$PID/TN\" alt=\"$title\"/><br />".$title,$link,$options = array('html' => TRUE));
+        //fill the column with a TN, title and link them to the $link var
+        $cols[] = l("<img src=\"$fedora_url/get/$PID/TN\" alt=\"$title\"/><br />".$title,$link,$options = array('html' => TRUE));
         if($i == $numCols) {
           $rows[] = $cols;
           $i=0;
@@ -78,12 +85,13 @@ class IslandStoriesSolrResults extends IslandoraSolrResults {
         }
         
     }
+    //dump remaining results to a new row if they didn't complete a full row
     if($i < $numCols) {
           $rows[] = $cols;
           $i=0;
           $cols = "";
     }
-    
+    //theme the table with drupal function
     $output .= theme_table(null,$rows);
     
     

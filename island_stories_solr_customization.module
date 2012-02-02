@@ -13,8 +13,9 @@ function island_stories_solr_customization_menu() {
 
 
     $items['communities'] = array(
-        'title' => t('Island Communities'),
+        'title' => t('Island Communities'), 
        	'page callback' => 'island_stories_solr_customization_communities_view',
+        //'page callback' => 'island_stories_solr_customization_communities_view',
         'type' => MENU_CALLBACK,
         'access arguments' => array('view fedora collection')
     );
