@@ -19,6 +19,7 @@ class IslandStoriesSolrResults extends IslandoraSolrResults {
 
   function IslandStoriesSolrResults() {
     module_load_include('php', 'islandora_solr_search', 'Solr/Service');
+    
   }
 
   /**
@@ -69,28 +70,37 @@ class IslandStoriesSolrResults extends IslandoraSolrResults {
         $model = str_replace("info:fedora/", "", $doc['rels.hasModel'][0]);
         
         if($collection == "info:fedora/istories:communities") {
-            $link = "islandora/solr/search/mods.city:$city AND -rels.isMemberOfCollection:istories\:communities AND coordinates:[* TO *] AND -typeOfResource:collection AND (PID:cap* OR PID:craipe* OR PID:herbarium* OR PID:imagined* OR PID:ivoices* OR PID:ilives*)";            
-            
-            
+            $link = "communities/$city";
         }
         else {
             $link = $base_url ."/islandoraviewer/$PID/$model";
         }
         //fill the column with a TN, title and link them to the $link var
         $cols[] = l("<img src=\"$fedora_url/get/$PID/TN\" alt=\"$title\"/><br />".$title,$link,$options = array('html' => TRUE));
+        //$cols[] = "test";
         if($i == $numCols) {
           $rows[] = $cols;
           $i=0;
           $cols = "";
+        }        
+    }
+    
+    //dump remaining results to a new row 
+    //if they didn't complete a full row
+    if($i < $numCols && is_array($cols)) {
+        
+        //fill the remainder of the row cells with blank
+        for($i; $i <= $numCols; $i++) {
+            $cols[] = "";
         }
         
+        $rows[] = $cols;
+        $i=0;
+        $cols = "";
     }
-    //dump remaining results to a new row if they didn't complete a full row
-    if($i < $numCols) {
-          $rows[] = $cols;
-          $i=0;
-          $cols = "";
-    }
+    
+   
+    
     //theme the table with drupal function
     $output .= theme_table(null,$rows);
     
