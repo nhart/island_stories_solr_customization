@@ -55,7 +55,10 @@ function island_stories_solr_customization_communities_view($city = NULL) {
     if($city) {
         drupal_set_title(TITLE . ": ".$city);
         //default community view --lists all communities
-        $query = "mods.city:$city AND -rels.isMemberOfCollection:istories\:communities AND coordinates:[* TO *] AND -typeOfResource\:collection AND (PID:cap* OR PID:craipe* OR PID:herbarium* OR PID:imagined* OR PID:ivoices* OR PID:ilives*)";
+        $query = "mods.city:\"$city*\" AND -rels.isMemberOfCollection:istories\:communities AND coordinates:[* TO *] AND -typeOfResource\:collection AND (PID:cap* OR PID:craipe* OR PID:herbarium* OR PID:imagined* OR PID:ivoices* OR PID:ilives*)";
+        $query = "mods.city:\"$city*\" AND -rels.isMemberOfCollection:istories\:communities AND coordinates:[* TO *] AND -typeOfResource\:collection AND (PID:cap* OR PID:craipe* OR PID:herbarium* OR PID:imagined* OR PID:ivoices* OR PID:ilives*)";
+        
+        
     }
     else {
        //list all communities
