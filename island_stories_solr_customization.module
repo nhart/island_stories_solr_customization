@@ -21,6 +21,13 @@ function island_stories_solr_customization_menu() {
         'access arguments' => array('view fedora collection')
     );
     
+    $items['stories'] = array(
+        'title ' => TITLE,
+       	'page callback' => 'island_stories_solr_customization_stories_view',
+        'type' => MENU_CALLBACK,
+        'access arguments' => array('view fedora collection')
+    );
+    
     
     return $items;
 }
@@ -50,7 +57,46 @@ function island_stories_solr_customization_islandora_solr_primary_display() {
 }
 
 function island_stories_solr_customization_communities_view($city = NULL) {
+    global $base_url;
+    $solrResult = new IslandoraSolrQueryProcessor();
+    if($city) {
+        drupal_set_title(TITLE . ": ".$city);
+        
+        
+        //default community view --lists all communities
+        $query = "mods.city:\"$city*\" AND -rels.isMemberOfCollection:istories\:communities AND coordinates:[* TO *] AND -typeOfResource\:collection AND (PID:cap* OR PID:craipe* OR PID:herbarium* OR PID:imagined* OR PID:ivoices* OR PID:ilives*)";
+    }
+    else {
+       //list all communities
+      $query = "rels.isMemberOfCollection:istories\:communities AND mods.city:[* TO *]";
+      
+      }
+    $solrResult->buildQuery($query);
+    $solrResult->executeQuery();
     
+    $solrDisplay = new IslandStoriesSolrResults(); 
+    
+    // Build Breadcrumbs
+        $breadcrumb = array();
+        $breadcrumb[] = l('Home', '<front>');
+        
+        if($city) {
+            $breadcrumb[] = l('Communities', "$base_url/communities/");
+            //$breadcrumb[] = l($city, "$base_url/communities/$city");
+        }
+        //$breadcrumb[] = l('Topics', 'taxonomy/term/1');
+        //$breadcrumb[] = l(drupal_get_title(), base_path() . request_uri()); // Link to current URL
+
+        // Set Breadcrumbs
+        drupal_set_breadcrumb($breadcrumb);
+    
+    return $solrDisplay->displayResults($solrResult);
+     //drupal_goto('islandora/solr/search/rels.isMemberOfCollection:istories\:communities'); 
+        
+}
+
+function island_stories_solr_customization_stories_view($PID = NULL) {
+    /*
     $solrResult = new IslandoraSolrQueryProcessor();
     if($city) {
         drupal_set_title(TITLE . ": ".$city);
@@ -70,6 +116,8 @@ function island_stories_solr_customization_communities_view($city = NULL) {
     
     $solrDisplay = new IslandStoriesSolrResults(); 
     return $solrDisplay->displayResults($solrResult);
-     //drupal_goto('islandora/solr/search/rels.isMemberOfCollection:istories\:communities'); 
+    */
+    return "test for stories";
+     
         
 }

@@ -73,7 +73,7 @@ class IslandStoriesSolrResults extends IslandoraSolrResults {
             $link = "communities/$city";
         }
         else {
-            $link = $base_url ."/islandoraviewer/$PID/$model";
+            $link = $base_url ."/island_stories_viewer/$PID/$city";
         }
         //fill the column with a TN, title and link them to the $link var
         $cols[] = l("<img src=\"$fedora_url/get/$PID/TN\" alt=\"$title\"/><br />".$title,$link,$options = array('html' => TRUE));
